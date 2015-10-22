@@ -99,16 +99,18 @@ program
 program
   .command("multihost [path]")
   .option("-p, --port <port>", "Specify a port to listen on")
+  .option("-hn --hostname [hostname]", "Specify a hostname or use current system hostname")
   .usage("starts a Harp server to host a directory of Harp projects.")
   .description("Start a Harp server to host a directory of Harp projects")
   .action(function(path, program){
     var projectPath = nodePath.resolve(process.cwd(), path || "")
     var port        = program.port || 9000
-    harp.multihost(projectPath, { port: port }, function(){
+    var hostname    = program.hostname == true ? require("os").hostname() : program.hostname || "harp.nu"
+    harp.multihost(projectPath, { port: port, hostname: hostname }, function(){
       if(port == "80"){
-        var loc = "http://ux-style-guides.dev.lax.rapid7.com/"
+        var loc = "http://" + hostname
       }else{
-        var loc = "http://ux-style-guides.dev.lax.rapid7.com/:" + port
+        var loc = "http://"+hostname+":" + port
       }
       output("Your server is hosting multiple projects at " + loc)
     })
